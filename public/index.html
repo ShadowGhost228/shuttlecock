@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shuttlecock</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
+    <!-- Bootstrap core CSS -->
+    <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="stylesheets/mdb.min.css" rel="stylesheet">
+    <!-- Your custom styles (optional) -->
+    <link href="stylesheets/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+<main id="app">
+
+    <!-- Navbar -->
+    <nav class="navbar fixed-top navbar-expand-lg navbar-light white scrolling-navbar">
+        <div class="container">
+
+            <a @click="currentPage = 'magasin'" class="navbar-brand waves-effect">
+                <strong class="blue-text">Shuttlecock</strong>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+
+                <ul class="navbar-nav mr-auto">
+                    <!--
+                    <li class="nav-item" v-for="item in genderList">
+                        <a class="nav-link waves-effect" href="#">
+                            {{ item.name }}
+                        </a>
+                    </li>
+                    -->
+                </ul>
+
+                <ul class="navbar-nav nav-flex-icons">
+                    <li>
+                        <form class="form-inline">
+                            <div class="md-form my-0">
+                                <input class="form-control mr-sm-5" type="text" placeholder="Search"
+                                       aria-label="Search">
+                            </div>
+                        </form>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link waves-effect">
+                            <span class="badge red mr-1">{{cart.length}}</span>
+                            <i class="fa fa-shopping-cart"></i>
+                            <span @click="currentPage = 'cart'" class="clearfix d-sm-inline-block"> Cart </span>
+                        </a>
+                    </li>
+
+                    <li v-if="isconnect === false" class="nav-item">
+                        <a @click="currentPage = 'signin'" class="nav-link waves-effect">
+                            <i class="fa fa-user"></i>
+                        </a>
+                    </li>
+                    <li v-if="isconnect === false" class="nav-item">
+                        <a @click="currentPage = 'register'" class="nav-link waves-effect">
+                            <i class="fa fa-user-plus"></i>
+                        </a>
+                    </li>
+                    <li v-if="isconnect === true" class="nav-item">
+                        <a class="nav-link waves-effect">
+                            {{ currentuser.prenom }}
+                        </a>
+                    </li>
+                    <li v-if="isconnect === true" class="nav-item">
+                        <a @click="deconnexion()" class="nav-link waves-effect">
+                            Deconnexion
+                        </a>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar -->
+
+    <signin v-if="currentPage === 'signin'" @login="onClickButtonSignin"
+            @emailwrite="onWriteEmail"
+            @passwordwrite="onWritePassword"
+            @changepage="onChangePage"
+            :currentpage="currentPage"
+            :email="email"
+            :password="password">
+
+    </signin>
+
+    <register v-else-if="currentPage === 'register'" @register="addUsers"
+              @passwordwrite="onWriteMotDePasse" @mailwrite="onWriteMail"
+              @prenomwrite="onWritePrenom" :mail="mail" :mdp="mdp" :prenom="prenom" :currentpage="currentPage">
+
+    </register>
+
+    <!--Main layout-->
+    <section v-else-if="currentPage === 'magasin'" id="magasin">
+        <div class="container">
+
+            <menu-categorie v-bind:categorielist="categorielist">
+
+            </menu-categorie>
+
+            <section id="products" class="text-center mb-4">
+
+                <!--Grid row-->
+                <div class="row wow fadeIn">
+
+                    <!--Grid column-->
+                    <div class="col-lg-3 col-md-6 mb-4" v-for="item in productsList">
+
+                        <!--Card-->
+                        <div class="card">
+
+                            <view-overlay :product="item">
+
+                            </view-overlay>
+
+                            <!--Card content-->
+                            <card-body :product="item">
+
+                            </card-body>
+
+                            <div class="card-footer text-center">
+                                <a @click="addToCart(item)">
+                                   Add to cart <i class="fa fa-shopping-cart"></i>
+                                </a>
+                            </div>
+
+                        </div>
+                        <!--Card-->
+
+                    </div>
+                    <!--Grid column-->
+
+                </div>
+                <!--Grid row-->
+
+
+            </section>
+
+            <!--Pagination-->
+            <nav class="d-flex justify-content-center wow fadeIn">
+                <ul class="pagination pg-blue">
+
+                    <!--Arrow left-->
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+
+                    <li class="page-item active">
+                        <a class="page-link" href="#">1
+                            <span class="sr-only">(current)</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">2</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">3</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">4</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">5</a>
+                    </li>
+
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <!--Pagination-->
+
+        </div>
+    </section>
+    <!--Main layout-->
+
+    <section v-else-if="currentPage === 'cart'" id="cart">
+
+        <!--Table-->
+        <table id="tablePreview" class="table offset-1 col-md-10" >
+            <!--Table head-->
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Nom</th>
+                <th>Catégorie</th>
+                <th>Prix</th>
+                <th>Suppimer</th>
+            </tr>
+            </thead>
+            <!--Table head-->
+            <!--Table body-->
+            <tbody>
+            <tr v-for="item in cart">
+                <th scope="row">{{ item.id }}</th>
+                <td> {{ item.title }} </td>
+                <td> {{ item.category }} </td>
+                <td> {{ item.price }} € </td>
+                <td><a @click="updateCart(item)" class="waves-effect"><i class="fa fa-remove"></i></a></td>
+            </tr>
+            <tr>
+                <td class="text-center" colspan="3"> Total </td>
+                <td class="text-center" colspan="2"> {{ cartPrice() }} € </td>
+                <td class="btn btn-primary">Pay  <i class="fa fa-credit-card"></i></td>
+            </tr>
+            </tbody>
+            <!--Table body-->
+        </table>
+        <!--Table-->
+
+
+
+    </section>
+
+    <my-footer>
+
+    </my-footer>
+
+
+</main>
+
+<!--jQuery js -->
+<script type="text/javascript" src="javascripts/jquery-3.3.1.min.js"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" src="javascripts/popper.min.js"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" src="javascripts/bootstrap.min.js"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" src="javascripts/mdb.min.js"></script>
+<!-- Script vue JS -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<!-- Axios js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.15.2/axios.js"></script>
+<!-- Menu components.js -->
+<script src="components/menu.component.js"></script>
+<!-- signin compoments.js -->
+<script src="components/signin.component.js"></script>
+<!-- register compoments.js -->
+<script src="components/register.component.js"></script>
+<!--  view overlay components-->
+<script src="components/view-overlay.component.js"></script>
+<!--  view card components-->
+<script src="components/card-body.component.js"></script>
+<!--  footer components-->
+<script src="components/my-footer.component.js"></script>
+<!-- Main js -->
+<script src="javascripts/main.js"></script>
+</body>
+</html>
